@@ -13,7 +13,7 @@ end clock_divider;
 architecture bhv of clock_divider is
   
 signal count: integer:= 0;
-signal tmp : std_logic := '0';
+signal tmp : std_logic := '1';
 
 begin
   

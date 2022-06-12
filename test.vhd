@@ -50,6 +50,7 @@ ARCHITECTURE arch_test OF test IS
 	end COMPONENT;
 	
 	signal ccc: std_logic;
+	signal ddd: std_logic;
 	signal notclk: std_logic;
 
 	signal a1: std_logic;
@@ -59,11 +60,14 @@ ARCHITECTURE arch_test OF test IS
 
 	signal symbol_clock: std_logic;
 	signal symbol_clock_inverted: std_logic;
+
+	signal sym_in: integer := 0;
+	signal sym_in_raised: integer := -5;
 begin
 
 	a: PSAM_Altera port map(
-		1000000, --real symbol
-		1000000, --imag symbol
+		1000000,--sym_in_raised,--1000000, --real symbol
+		1000000,--sym_in_raised, --1000000, --imag symbol
 		500000, --real part of inverse pilot
 		-500000, --imag part of inverse pilot
 		'0', --reset
@@ -91,4 +95,14 @@ o: clock_divider port map(
 		symbol_clock
 	   );
 	symbol_clock_inverted <= not(symbol_clock);
+
+
+q: count_to port map(
+	  symbol_clock,'0', 
+	  1500000 - 1,
+	  ddd,
+	  sym_in
+	 );
+sym_in_raised <= (sym_in + 1)*1000000;
+
 END ARCHITECTURE;
