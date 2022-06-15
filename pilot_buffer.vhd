@@ -6,10 +6,10 @@ ENTITY pilot_buffer IS
 		real_in: IN integer;
 		imag_in: IN integer;
 		RESET: IN STD_LOGIC;
-		CLK: IN STD_LOGIC;
+		H_S_CLK: IN STD_LOGIC;
 		pilot_CLK: IN STD_LOGIC;
-		symbol_index: IN integer;
-	        pilot_in_real_15: in integer;
+		pilots_ready_flag: OUT STD_LOGIC;
+	    pilot_in_real_15: in integer;
 		pilot_in_imag_15: in integer;
 		pilot_in_real_16: in integer;
 		pilot_in_imag_16: in integer;
@@ -117,6 +117,15 @@ ARCHITECTURE arch_pilot_buffer OF pilot_buffer IS
 		);
 	END COMPONENT;
 
+	COMPONENT simple_delay IS
+	PORT(
+		signal_in: IN STD_LOGIC;
+		RESET: IN STD_LOGIC;
+		CLK: IN STD_LOGIC;
+		signal_out: OUT STD_LOGIC
+		);
+	END COMPONENT;
+
 	constant number_of_symbols_per_frame : integer := 15;
 	constant number_of_frames : integer := 30;
 	constant number_of_frames_half : integer := number_of_frames / 2 + 1; -- + 1 stands for current frame
@@ -130,8 +139,8 @@ ARCHITECTURE arch_pilot_buffer OF pilot_buffer IS
 	signal delay_outputs_real : int_array_b;
 	signal delay_outputs_imag : int_array_b;
 	
-	signal conn_real : integer := 0;
-	signal conn_imag : integer := 0;
+	signal conn_real : integer;
+	signal conn_imag : integer;
 begin
 
 	--buffer pilota iz polovine okvira koja je prosla kroz buffer okvira
@@ -321,5 +330,10 @@ begin
 				pilot_real_30,
 				pilot_imag_30
 				);	
-
+	pilot_clk_delaying: simple_delay PORT MAP(
+				pilot_CLK,
+				RESET,
+				H_S_CLK,
+				pilots_ready_flag
+			);
 end ARCHITECTURE;

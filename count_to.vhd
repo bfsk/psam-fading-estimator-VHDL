@@ -13,16 +13,16 @@ end count_to;
   
 architecture bhv of count_to is
   
-signal count: integer := 0;
-signal pilot_count: integer := 0;
-signal tmp : std_logic := '0';
+signal count: integer;
+signal pilot_count: integer;
+signal tmp : std_logic;
   
 begin
   
-process(clk,reset)
+process(clk,reset, count, pilot_count,tmp)
 begin
 	if(reset='1') then
-		count <= 0;
+		count <= -1;
 		pilot_count <= 0;
 		tmp <= '0';
 	elsif(clk'event and clk='1') then
@@ -30,7 +30,7 @@ begin
 		if (count = upper_bound) then
 			count <= 0;
 		end if;
-	elsif(clk'event and clk='0') then
+
 		pilot_count <= pilot_count + 1;
 		if (pilot_count = upper_bound) then
 			tmp <= '1';

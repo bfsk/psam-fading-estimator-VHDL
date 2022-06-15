@@ -9,14 +9,14 @@ ENTITY estimator IS
 		real_in_pilot_constant: IN integer;
 		imag_in_pilot_constant: IN integer;
 		RESET: IN STD_LOGIC;
-		H_S_CLK: in std_logic;
 		CLK: IN STD_LOGIC;
+		H_S_CLK: in std_logic;
 		real_estim_out: OUT integer;
 		imag_estim_out: OUT integer;
 		real_out: OUT integer;
 		imag_out: OUT integer;
-		pilot_CLK: OUT STD_LOGIC;
-		symbol_index: OUT integer
+		symbol_index: OUT integer;
+		calc_rdy: out std_logic
 		);
 END estimator;
 
@@ -28,6 +28,7 @@ ARCHITECTURE arch_estimator OF estimator IS
 		imag_in: IN integer;
 		RESET: IN STD_LOGIC;
 		CLK: IN STD_LOGIC;
+		H_S_CLK: IN STD_LOGIC;
 		real_out: OUT integer;
 		imag_out: OUT integer;
 		pilot_symbol_CLK: OUT STD_LOGIC;
@@ -95,10 +96,10 @@ ARCHITECTURE arch_estimator OF estimator IS
 		real_in: IN integer;
 		imag_in: IN integer;
 		RESET: IN STD_LOGIC;
-		CLK: IN STD_LOGIC;
+		H_S_CLK: IN STD_LOGIC;
 		pilot_CLK: IN STD_LOGIC;
-		symbol_index: IN integer;
-	        pilot_in_real_15: in integer;
+		pilots_ready_flag: OUT STD_LOGIC;
+	    pilot_in_real_15: in integer;
 		pilot_in_imag_15: in integer;
 		pilot_in_real_16: in integer;
 		pilot_in_imag_16: in integer;
@@ -232,7 +233,9 @@ ARCHITECTURE arch_estimator OF estimator IS
 	
 	COMPONENT multiplier IS
 	PORT(
+		CLK: in std_logic;
 		H_S_CLK: in std_logic;
+		RESET: in std_logic;
 		precision: in integer;
 		pilot_real_1: in integer;
 		pilot_imag_1: in integer;
@@ -383,7 +386,8 @@ ARCHITECTURE arch_estimator OF estimator IS
 		pilot_sinc_real_29: out integer;
 		pilot_sinc_imag_29: out integer;
 		pilot_sinc_real_30: out integer;
-		pilot_sinc_imag_30: out integer
+		pilot_sinc_imag_30: out integer;
+		calculation_ready: out std_logic
 		);
 	END COMPONENT;
 	
@@ -462,8 +466,8 @@ ARCHITECTURE arch_estimator OF estimator IS
 	constant number_of_frames_half_past : integer := (number_of_frames - 1) / 2;
 	
 	type int_array is array(0 to number_of_frames_half) of integer;
-	signal last_symbols_from_buffer_array_real : int_array;
-	signal last_symbols_from_buffer_array_real_imag : int_array;
+	signal first_symbols_from_buffer_array_real : int_array;
+	signal first_symbols_from_buffer_array_imag : int_array;
 	
 	type int_array_b is array(0 to number_of_frames - 1) of integer;
 	signal pilot_symbols_real : int_array_b;
@@ -477,23 +481,35 @@ ARCHITECTURE arch_estimator OF estimator IS
 	signal windowed_imag : int_array_b;
 	
 	
-	signal real_out_a: integer := 0;
-	signal imag_out_a: integer := 0;
-	
-	signal pilot_symbol_CLK_signal : std_logic := '0';
-	signal symbol_index_signal : integer := 0;
+	signal real_out_a: integer;
+	signal imag_out_a: integer;
 
-	signal real_in_synced: integer := 0;
-	signal imag_in_synced: integer := 0;
+	signal real_out_b: integer;
+	signal imag_out_b: integer;
 
-	signal real_in_synced_conn: integer := 0;
-	signal imag_in_synced_conn: integer := 0;
+	signal pilot_symbol_CLK_signal : std_logic;
+	signal not_CLK : std_logic;
+	signal symbol_index_signal : integer;
+	signal symbol_index_synced : integer;
+	signal symbol_index_synced_sinc : integer;
 
-	signal real_windowed: integer := 0;
-	signal imag_windowed: integer := 0;
+	signal real_in_synced: integer;
+	signal imag_in_synced: integer;
 
-	signal real_estim_divided: integer := 0;
-	signal imag_estim_divided: integer := 0;
+	signal real_in_synced_conn: integer;
+	signal imag_in_synced_conn: integer;
+
+	signal real_windowed: integer;
+	signal imag_windowed: integer;
+
+	signal real_estim_divided: integer;
+	signal imag_estim_divided: integer;
+
+	signal estim_calc_ready : std_logic;
+	signal H_S_NOT_CLK : std_logic;
+
+
+	signal pilots_ready_flag : std_logic;
 begin
 
 
@@ -502,84 +518,84 @@ begin
 					imag_in,
 					RESET,
 					CLK,
+					H_S_CLK,
 					real_out_a,
 					imag_out_a,
 					pilot_symbol_CLK_signal,
 					symbol_index_signal,
-					last_symbols_from_buffer_array_real(0),
-					last_symbols_from_buffer_array_real_imag(0),
-					last_symbols_from_buffer_array_real(1),
-					last_symbols_from_buffer_array_real_imag(1),
-					last_symbols_from_buffer_array_real(2),
-					last_symbols_from_buffer_array_real_imag(2),
-					last_symbols_from_buffer_array_real(3),
-					last_symbols_from_buffer_array_real_imag(3),
-					last_symbols_from_buffer_array_real(4),
-					last_symbols_from_buffer_array_real_imag(4),
-					last_symbols_from_buffer_array_real(5),
-					last_symbols_from_buffer_array_real_imag(5),
-					last_symbols_from_buffer_array_real(6),
-					last_symbols_from_buffer_array_real_imag(6),
-					last_symbols_from_buffer_array_real(7),
-					last_symbols_from_buffer_array_real_imag(7),
-					last_symbols_from_buffer_array_real(8),
-					last_symbols_from_buffer_array_real_imag(8),
-					last_symbols_from_buffer_array_real(9),
-					last_symbols_from_buffer_array_real_imag(9),
-					last_symbols_from_buffer_array_real(10),
-					last_symbols_from_buffer_array_real_imag(10),
-					last_symbols_from_buffer_array_real(11),
-					last_symbols_from_buffer_array_real_imag(11),
-					last_symbols_from_buffer_array_real(12),
-					last_symbols_from_buffer_array_real_imag(12),
-					last_symbols_from_buffer_array_real(13),
-					last_symbols_from_buffer_array_real_imag(13),
-					last_symbols_from_buffer_array_real(14),
-					last_symbols_from_buffer_array_real_imag(14),
-					last_symbols_from_buffer_array_real(15),
-					last_symbols_from_buffer_array_real_imag(15)
+					first_symbols_from_buffer_array_real(0),
+					first_symbols_from_buffer_array_imag(0),
+					first_symbols_from_buffer_array_real(1),
+					first_symbols_from_buffer_array_imag(1),
+					first_symbols_from_buffer_array_real(2),
+					first_symbols_from_buffer_array_imag(2),
+					first_symbols_from_buffer_array_real(3),
+					first_symbols_from_buffer_array_imag(3),
+					first_symbols_from_buffer_array_real(4),
+					first_symbols_from_buffer_array_imag(4),
+					first_symbols_from_buffer_array_real(5),
+					first_symbols_from_buffer_array_imag(5),
+					first_symbols_from_buffer_array_real(6),
+					first_symbols_from_buffer_array_imag(6),
+					first_symbols_from_buffer_array_real(7),
+					first_symbols_from_buffer_array_imag(7),
+					first_symbols_from_buffer_array_real(8),
+					first_symbols_from_buffer_array_imag(8),
+					first_symbols_from_buffer_array_real(9),
+					first_symbols_from_buffer_array_imag(9),
+					first_symbols_from_buffer_array_real(10),
+					first_symbols_from_buffer_array_imag(10),
+					first_symbols_from_buffer_array_real(11),
+					first_symbols_from_buffer_array_imag(11),
+					first_symbols_from_buffer_array_real(12),
+					first_symbols_from_buffer_array_imag(12),
+					first_symbols_from_buffer_array_real(13),
+					first_symbols_from_buffer_array_imag(13),
+					first_symbols_from_buffer_array_real(14),
+					first_symbols_from_buffer_array_imag(14),
+					first_symbols_from_buffer_array_real(15),
+					first_symbols_from_buffer_array_imag(15)
 					);		
-
 
 	buffer_of_pilots: pilot_buffer PORT MAP(
 					real_out_a,
 					imag_out_a,
 					RESET,
-					CLK,
+					H_S_CLK,
 					pilot_symbol_CLK_signal,
-					symbol_index_signal,
-					last_symbols_from_buffer_array_real(0),
-					last_symbols_from_buffer_array_real_imag(0),
-					last_symbols_from_buffer_array_real(1),
-					last_symbols_from_buffer_array_real_imag(1),
-					last_symbols_from_buffer_array_real(2),
-					last_symbols_from_buffer_array_real_imag(2),
-					last_symbols_from_buffer_array_real(3),
-					last_symbols_from_buffer_array_real_imag(3),
-					last_symbols_from_buffer_array_real(4),
-					last_symbols_from_buffer_array_real_imag(4),
-					last_symbols_from_buffer_array_real(5),
-					last_symbols_from_buffer_array_real_imag(5),
-					last_symbols_from_buffer_array_real(6),
-					last_symbols_from_buffer_array_real_imag(6),
-					last_symbols_from_buffer_array_real(7),
-					last_symbols_from_buffer_array_real_imag(7),
-					last_symbols_from_buffer_array_real(8),
-					last_symbols_from_buffer_array_real_imag(8),
-					last_symbols_from_buffer_array_real(9),
-					last_symbols_from_buffer_array_real_imag(9),
-					last_symbols_from_buffer_array_real(10),
-					last_symbols_from_buffer_array_real_imag(10),
-					last_symbols_from_buffer_array_real(11),
-					last_symbols_from_buffer_array_real_imag(11),
-					last_symbols_from_buffer_array_real(12),
-					last_symbols_from_buffer_array_real_imag(12),
-					last_symbols_from_buffer_array_real(13),
-					last_symbols_from_buffer_array_real_imag(13),
-					last_symbols_from_buffer_array_real(14),
-					last_symbols_from_buffer_array_real_imag(14),
-					last_symbols_from_buffer_array_real(15),
-					last_symbols_from_buffer_array_real_imag(15),
+					pilots_ready_flag,
+					first_symbols_from_buffer_array_real(0),
+					first_symbols_from_buffer_array_imag(0),
+					first_symbols_from_buffer_array_real(1),
+					first_symbols_from_buffer_array_imag(1),
+					first_symbols_from_buffer_array_real(2),
+					first_symbols_from_buffer_array_imag(2),
+					first_symbols_from_buffer_array_real(3),
+					first_symbols_from_buffer_array_imag(3),
+					first_symbols_from_buffer_array_real(4),
+					first_symbols_from_buffer_array_imag(4),
+					first_symbols_from_buffer_array_real(5),
+					first_symbols_from_buffer_array_imag(5),
+					first_symbols_from_buffer_array_real(6),
+					first_symbols_from_buffer_array_imag(6),
+					first_symbols_from_buffer_array_real(7),
+					first_symbols_from_buffer_array_imag(7),
+					first_symbols_from_buffer_array_real(8),
+					first_symbols_from_buffer_array_imag(8),
+					first_symbols_from_buffer_array_real(9),
+					first_symbols_from_buffer_array_imag(9),
+					first_symbols_from_buffer_array_real(10),
+					first_symbols_from_buffer_array_imag(10),
+					first_symbols_from_buffer_array_real(11),
+					first_symbols_from_buffer_array_imag(11),
+					first_symbols_from_buffer_array_real(12),
+					first_symbols_from_buffer_array_imag(12),
+					first_symbols_from_buffer_array_real(13),
+					first_symbols_from_buffer_array_imag(13),
+					first_symbols_from_buffer_array_real(14),
+					first_symbols_from_buffer_array_imag(14),
+					first_symbols_from_buffer_array_real(15),
+					first_symbols_from_buffer_array_imag(15),
 					pilot_symbols_real(0),
 					pilot_symbols_imag(0),
 					pilot_symbols_real(1),
@@ -678,7 +694,9 @@ begin
 				 );
 				
 	windowing: multiplier PORT MAP(
+					CLK,
 					H_S_CLK,
+					RESET,
 					precision,
 					pilot_symbols_real(0),
 					pilot_symbols_imag(0),
@@ -829,7 +847,8 @@ begin
 					windowed_real(28),
 					windowed_imag(28),
 					windowed_real(29),
-					windowed_imag(29)
+					windowed_imag(29),
+					estim_calc_ready
 			);	
 					
    final_estimation: vector_sum PORT MAP(
@@ -908,27 +927,34 @@ begin
 		);		
 
 	--sync symbola i pilota
-
+	--not_CLK
 	sync_out: complex_delay PORT MAP(
 		real_estim_divided,
 		imag_estim_divided,
 		RESET,
-		CLK,
+		estim_calc_ready,
 		real_estim_out,
 		imag_estim_out
 		);		
-
+	calc_rdy <= estim_calc_ready;
 	sync_a: complex_delay PORT MAP(
 		real_out_a,
 		imag_out_a,
 		RESET,
 		CLK,
+		real_out_b,
+		imag_out_b
+		);	
+	sync_b: complex_delay PORT MAP(
+		real_out_b,
+		imag_out_b,
+		RESET,
+		estim_calc_ready,
 		real_in_synced,
 		imag_in_synced
 		);	
-
-	real_out <= real_out_a;
-	imag_out <= imag_out_a;
+	real_out <= real_in_synced;
+	imag_out <= imag_in_synced;
 				
 									
 END ARCHITECTURE;

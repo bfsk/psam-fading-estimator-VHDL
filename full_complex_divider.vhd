@@ -14,7 +14,7 @@ ENTITY full_complex_divider IS
 END full_complex_divider;
 
 ARCHITECTURE arch_full_complex_divider OF full_complex_divider IS
-	signal modul: signed(63 downto 0) := (others => '1');
+	signal modul: signed(63 downto 0);
 begin
     modul <= (to_signed(real_estim, 32) * to_signed(real_estim, 32)
 	     + to_signed(imag_estim, 32) * to_signed(imag_estim, 32))/precision

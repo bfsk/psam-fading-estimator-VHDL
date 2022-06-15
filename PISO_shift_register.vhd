@@ -1,0 +1,150 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.all;
+ENTITY PISO_shift_register IS
+	PORT(
+		CLK: in std_logic;
+		RESET: in std_logic;
+        parallel_load: in std_logic;
+		data_1: in integer;
+        data_2: in integer;
+        data_3: in integer;
+        data_4: in integer;
+        data_5: in integer;
+        data_6: in integer;
+        data_7: in integer;
+        data_8: in integer;
+        data_9: in integer;
+        data_10: in integer;
+        data_11: in integer;
+        data_12: in integer;
+        data_13: in integer;
+        data_14: in integer;
+        data_15: in integer;
+        data_16: in integer;
+        data_17: in integer;
+        data_18: in integer;
+        data_19: in integer;
+        data_20: in integer;
+        data_21: in integer;
+        data_22: in integer;
+        data_23: in integer;
+        data_24: in integer;
+        data_25: in integer;
+        data_26: in integer;
+        data_27: in integer;
+        data_28: in integer;
+        data_29: in integer;
+        data_30: in integer;
+		serial_out: out integer
+		);
+END PISO_shift_register;
+
+ARCHITECTURE arch_PISO_shift_register OF PISO_shift_register IS
+
+    type int_array is array(0 to 29) of integer;
+    signal data_signals : int_array;
+begin
+	process(CLK, RESET, parallel_load)
+    begin
+        if (RESET = '1') then
+            data_signals(0) <= 0;
+            data_signals(1) <= 0;
+            data_signals(2) <= 0;
+            data_signals(3) <= 0;
+            data_signals(4) <= 0;
+            data_signals(5) <= 0;
+            data_signals(6) <= 0;
+            data_signals(7) <= 0;
+            data_signals(8) <= 0;
+            data_signals(9) <= 0;
+            data_signals(10) <= 0;
+            data_signals(11) <= 0;
+            data_signals(12) <= 0;
+            data_signals(13) <= 0;
+            data_signals(14) <= 0;
+            data_signals(15) <= 0;
+            data_signals(16) <= 0;
+            data_signals(17) <= 0;
+            data_signals(18) <= 0;
+            data_signals(19) <= 0;
+            data_signals(20) <= 0;
+            data_signals(21) <= 0;
+            data_signals(22) <= 0;
+            data_signals(23) <= 0;
+            data_signals(24) <= 0;
+            data_signals(25) <= 0;
+            data_signals(26) <= 0;
+            data_signals(27) <= 0;
+            data_signals(28) <= 0;
+            data_signals(29) <= 0;
+            serial_out <= 0;
+        elsif(CLK'event and CLK = '1') then
+            if(parallel_load = '1') then
+                data_signals(0) <= data_30;
+                data_signals(1) <= data_29;
+                data_signals(2) <= data_28;
+                data_signals(3) <= data_27;
+                data_signals(4) <= data_26;
+                data_signals(5) <= data_25;
+                data_signals(6) <= data_24;
+                data_signals(7) <= data_23;
+                data_signals(8) <= data_22;
+                data_signals(9) <= data_21;
+                data_signals(10) <= data_20;
+                data_signals(11) <= data_19;
+                data_signals(12) <= data_18;
+                data_signals(13) <= data_17;
+                data_signals(14) <= data_16;
+                data_signals(15) <= data_15;
+                data_signals(16) <= data_14;
+                data_signals(17) <= data_13;
+                data_signals(18) <= data_12;
+                data_signals(19) <= data_11;
+                data_signals(20) <= data_10;
+                data_signals(21) <= data_9;
+                data_signals(22) <= data_8;
+                data_signals(23) <= data_7;
+                data_signals(24) <= data_6;
+                data_signals(25) <= data_5;
+                data_signals(26) <= data_4;
+                data_signals(27) <= data_3;
+                data_signals(28) <= data_2;
+                data_signals(29) <= data_1;
+            else
+                data_signals(0) <= data_signals(29);
+                data_signals(1) <= data_signals(0);
+                data_signals(2) <= data_signals(1);
+                data_signals(3) <= data_signals(2);
+                data_signals(4) <= data_signals(3);
+                data_signals(5) <= data_signals(4);
+                data_signals(6) <= data_signals(5);
+                data_signals(7) <= data_signals(6);
+                data_signals(8) <= data_signals(7);
+                data_signals(9) <= data_signals(8);
+                data_signals(10) <= data_signals(9);
+                data_signals(11) <= data_signals(10);
+                data_signals(12) <= data_signals(11);
+                data_signals(13) <= data_signals(12);
+                data_signals(14) <= data_signals(13);
+                data_signals(15) <= data_signals(14);
+                data_signals(16) <= data_signals(15);
+                data_signals(17) <= data_signals(16);
+                data_signals(18) <= data_signals(17);
+                data_signals(19) <= data_signals(18);
+                data_signals(20) <= data_signals(19);
+                data_signals(21) <= data_signals(20);
+                data_signals(22) <= data_signals(21);
+                data_signals(23) <= data_signals(22);
+                data_signals(24) <= data_signals(23);
+                data_signals(25) <= data_signals(24);
+                data_signals(26) <= data_signals(25);
+                data_signals(27) <= data_signals(26);
+                data_signals(28) <= data_signals(27);
+                data_signals(29) <= data_signals(28);
+            end if;
+        end if;
+        serial_out <= data_signals(29);
+    end process;
+
+END ARCHITECTURE;

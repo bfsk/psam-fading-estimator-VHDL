@@ -7,6 +7,7 @@ ENTITY symbol_buffer IS
 		imag_in: IN integer;
 		RESET: IN STD_LOGIC;
 		CLK: IN STD_LOGIC;
+		H_S_CLK: IN STD_LOGIC;
 		real_out: OUT integer;
 		imag_out: OUT integer;
 		pilot_symbol_CLK: OUT STD_LOGIC;
@@ -67,7 +68,16 @@ ARCHITECTURE arch_symbol_buffer OF symbol_buffer IS
 		count_out: out integer
 		);
 	END COMPONENT;
-	
+
+	COMPONENT simple_delay IS
+	PORT(
+		signal_in: IN STD_LOGIC;
+		RESET: IN STD_LOGIC;
+		CLK: IN STD_LOGIC;
+		signal_out: OUT STD_LOGIC
+		);
+	END COMPONENT;	
+
 	constant number_of_symbols_per_frame : integer := 15;
 	constant number_of_frames : integer := 30;
 	constant number_of_frames_half : integer := number_of_frames / 2 + 1; -- + 1 stands for current frame
@@ -78,8 +88,8 @@ ARCHITECTURE arch_symbol_buffer OF symbol_buffer IS
 	signal buffer_outputs_real : int_array;
 	signal buffer_outputs_imag : int_array;
 	
-	signal inverse_clk : std_logic := '0';
-
+	signal inverse_clk : std_logic;
+	signal pilot_clk_conn : std_logic;
 begin
 	
 		inverse_clk <= not(CLK);
@@ -108,13 +118,20 @@ begin
 		end generate a;
 		
 	
-	p: count_to port map(
-	  inverse_clk,RESET, 
-	  number_of_symbols_per_frame - 1,
-	  pilot_symbol_CLK,
-	  symbol_index
-	 );
+	symbol_index_clk_generation: count_to port map(
+		CLK,RESET, 
+		number_of_symbols_per_frame - 1,
+		pilot_clk_conn,
+		symbol_index
+	);
 	 
+	pilot_clk_delaying: simple_delay PORT MAP(
+		pilot_clk_conn,
+		RESET,
+		H_S_CLK,
+		pilot_symbol_CLK
+	);
+
 	 real_out <= buffer_outputs_real(15);
 	 imag_out <= buffer_outputs_imag(15);
 	 

@@ -3,9 +3,10 @@ USE IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.all;
 ENTITY test IS
 	PORT(
+		RESET: IN STD_LOGIC;
 		CLK: IN STD_LOGIC;
-		corrected_real_data_out: OUT integer;
-		corrected_imag_data_out: OUT integer;
+		real_data_to_matlab_out: OUT integer;
+		imag_data_to_matlab_out: OUT integer;
 		pilot_clk: OUT STD_LOGIC;
 		count_symbol: OUT integer;
 		count_symbol_all: OUT integer
@@ -14,21 +15,18 @@ END test;
 
 ARCHITECTURE arch_test OF test IS
 	
-	COMPONENT PSAM_Altera IS
+COMPONENT PSAM_Altera IS
 	PORT(
 		real_data_in: IN integer;
 		imag_data_in: IN integer;
-		real_in_pilot_constant: IN integer;
-		imag_in_pilot_constant: IN integer;
 		RESET: IN STD_LOGIC;
 		RESET_manual: IN STD_LOGIC;
 		CLK_HIL: IN STD_LOGIC;
-		CLK: IN STD_LOGIC;
 		H_S_CLK: in std_logic;
 		corrected_real_data_out: OUT integer;
 		corrected_imag_data_out: OUT integer;
-		pilot_clk: OUT STD_LOGIC;
-		count_symbol: OUT integer
+		count_symbol: OUT integer;
+		symbol_clock_out : out std_logic
 		);
 	END COMPONENT;
 	
@@ -49,60 +47,54 @@ ARCHITECTURE arch_test OF test IS
 			);
 	end COMPONENT;
 	
-	signal ccc: std_logic;
-	signal ddd: std_logic;
+
+	
 	signal notclk: std_logic;
 
-	signal a1: std_logic;
-	signal a2: std_logic;
-	signal a3: std_logic;
-	signal a4: integer;
 
-	signal symbol_clock: std_logic;
-	signal symbol_clock_inverted: std_logic;
-
-	signal sym_in: integer := 0;
-	signal sym_in_raised: integer := -5;
+	signal matlab_symbol_clock: std_logic;
+	signal matlab_symbol_clock_inverted: std_logic;
+	signal h_s_not_clk: std_logic;
+	signal matlab_symbol: integer;
+	signal generated_symbols_from_matlab: integer;
 begin
 
-	a: PSAM_Altera port map(
-		1000000,--sym_in_raised,--1000000, --real symbol
-		1000000,--sym_in_raised, --1000000, --imag symbol
-		500000, --real part of inverse pilot
-		-500000, --imag part of inverse pilot
-		'0', --reset
-		'0', --reset manual
+	PSAM: PSAM_Altera port map(
+		generated_symbols_from_matlab,--generated_symbols_from_matlab,--1000000, --real symbol
+		generated_symbols_from_matlab,--generated_symbols_from_matlab, --1000000, --imag symbol
+		RESET, --reset
+		RESET, --reset manual
 		'0', --CLK HIL
-		symbol_clock_inverted, --symbol clock
 		CLK, --High speed clock
-		corrected_real_data_out,
-		corrected_imag_data_out,
-		pilot_clk,
-		count_symbol
+		real_data_to_matlab_out,
+		imag_data_to_matlab_out,
+		open,
+		open
 	 );
 
-notclk<=not(CLK);
-p: count_to port map(
-	  notclk,'0', 
-	  1500000 - 1,
-	  ccc,
-	  count_symbol_all
-	 );
+	notclk<=not(CLK);
+	--p: count_to port map(
+	--	notclk,'0', 
+	--o	1500000 - 1,
+	--	open,
+	--	count_symbol_all
+	--	);
 
-o: clock_divider port map(
-		15 - 1,
-		notclk, '0',
-		symbol_clock
+	h_s_not_clk <= not(CLK);
+	matlb_symbol_clock_generation_test: clock_divider port map(
+		21 - 1,
+		CLK, RESET,
+		matlab_symbol_clock
 	   );
-	symbol_clock_inverted <= not(symbol_clock);
 
+	matlab_symbol_clock_inverted <= not(matlab_symbol_clock);
+	generating_matlab_symbols: count_to port map(
+		matlab_symbol_clock_inverted,RESET, 
+		1500000 - 1,
+		open,
+		matlab_symbol
+		);
 
-q: count_to port map(
-	  symbol_clock,'0', 
-	  1500000 - 1,
-	  ddd,
-	  sym_in
-	 );
-sym_in_raised <= (sym_in + 1)*1000000;
+	generated_symbols_from_matlab <= (matlab_symbol + 2)*1000000; --+2 because count_to starts from -1 when reset
 
 END ARCHITECTURE;

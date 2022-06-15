@@ -14,8 +14,8 @@ ENTITY complex_delay IS
 END complex_delay;
 
 ARCHITECTURE arch_complex_delay OF complex_delay IS
-	signal real_d: integer:=0;
-	signal imag_d: integer:=0;
+	signal real_d: integer;
+	signal imag_d: integer;
 begin
 
 PROCESS(CLK, RESET)

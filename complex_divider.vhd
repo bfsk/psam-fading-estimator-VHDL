@@ -14,7 +14,7 @@ ENTITY complex_divider IS
 END complex_divider;
 
 ARCHITECTURE arch_complex_divider OF complex_divider IS
-signal s_32_bit_vector: signed(31 downto 0) := (others => '0');
+signal s_32_bit_vector: signed(31 downto 0);
 begin
    estimate_real <= 
 		to_integer(resize(to_signed(real_windowed_in, s_32_bit_vector'length) * to_signed(ref_real, s_32_bit_vector'length)/precision, s_32_bit_vector'length))

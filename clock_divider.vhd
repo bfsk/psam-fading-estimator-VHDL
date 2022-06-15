@@ -12,16 +12,16 @@ end clock_divider;
   
 architecture bhv of clock_divider is
   
-signal count: integer:= 0;
-signal tmp : std_logic := '1';
+signal count: integer;
+signal tmp : std_logic;
 
 begin
   
 process(clk,reset,count_to)
 begin
     if(reset='1') then
-        count<=1;
-        tmp<='0';
+        count<=0;
+        tmp<='1';
     elsif(clk'event and clk='1') then
         count <=count+1;
         if (count = count_to) then
