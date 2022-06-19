@@ -38,13 +38,11 @@ ARCHITECTURE arch_PSAM_Altera OF PSAM_Altera IS
 		imag_in_pilot_constant: IN integer;
 		RESET: IN STD_LOGIC;
 		CLK: IN STD_LOGIC;
+		pilot_clk: in std_logic;
 		H_S_CLK: in std_logic;
+		symbol_index: in integer;
 		real_estim_out: OUT integer;
-		imag_estim_out: OUT integer;
-		real_out: OUT integer;
-		imag_out: OUT integer;
-		symbol_index: OUT integer;
-		calc_rdy: out std_logic
+		imag_estim_out: OUT integer
 		);
 	END COMPONENT;
 
@@ -94,6 +92,7 @@ ARCHITECTURE arch_PSAM_Altera OF PSAM_Altera IS
 	signal real_corrected_conn : integer;
 	signal imag_corrected_conn : integer;
 	signal symbol_index : integer;
+	signal symbol_index_low : integer;
 	signal not_clk: std_logic;
 	
 	signal not_used_clk: std_logic;
@@ -101,12 +100,14 @@ ARCHITECTURE arch_PSAM_Altera OF PSAM_Altera IS
 	signal symbol_clock: std_logic;
 	signal symbol_clock_pre_sync: std_logic;
 	
-	
+	signal pilot_clk_generated: std_logic;
+	signal pilot_clk_pre_sync: std_logic;
+
 	signal corrected_ready: std_logic;
 	signal corrected_ready_sync: std_logic;
 	signal not_used_clk1: std_logic;
 	signal symbol_index_real : integer;
-
+	signal symbol_index_r : integer;
 
 	constant precision : integer := 1000000;
 	constant inversed_pilot_real : integer := 500000;
@@ -118,7 +119,7 @@ begin
 
 	--h_s_not_clk <= not(H_S_CLK);
 	symbol_clock_generation: clock_divider port map(
-		21 - 1,
+		20 - 1,
 		H_S_CLK, RESET_manual,
 		sc_conn
 	   );
@@ -132,6 +133,20 @@ begin
 
 
 	symbol_clock_out <= symbol_clock;
+
+
+	pilot_clock_generation: clock_divider port map(
+		300 - 1,
+		H_S_CLK, RESET_manual,
+		pilot_clk_pre_sync
+	   );
+
+	   pilotclk: simple_delay PORT MAP(
+		pilot_clk_pre_sync,
+		RESET_manual,
+		H_S_CLK,
+		pilot_clk_generated
+);
 	data_processing: estimator port map(
 		precision,
 		real_data_in,
@@ -140,62 +155,34 @@ begin
 		inversed_pilot_imag,
 		RESET_manual, 
 		symbol_clock,--CLK,
+		pilot_clk_generated, --pilot clk
 		H_S_CLK,
+		symbol_index,
 		real_estim_conn,
-		imag_estim_conn,
-		real_data,
-		imag_data,
-		open,
-		corrected_ready
+		imag_estim_conn
 	 );
 
-	data_correction: full_complex_divider PORT MAP(
-		precision,
-		real_data,
-		imag_data,
-		real_estim_conn,
-		imag_estim_conn,
-		real_corrected_conn_pre_sync,
-		imag_corrected_conn_pre_sync
-		);	
-
-	output_clock_sync: simple_delay PORT MAP(
-				corrected_ready,
-				RESET_manual,
-				H_S_CLK,
-				corrected_ready_sync
-		);
-	output_preparation: complex_delay PORT MAP(
-			real_corrected_conn_pre_sync,
-			imag_corrected_conn_pre_sync,
-			RESET,
-			corrected_ready_sync,
-			real_corrected_conn,
-			imag_corrected_conn);
-
-
-
-	
 	not_clk <= not(symbol_clock);
 
 
 	generating_symbol_index: count_to port map(
-	  	not_clk,RESET_manual, 
-	  	20 - 1,
-	  	not_used_clk,
-	  	symbol_index
+		symbol_clock,RESET_manual, 
+	  	15 - 1,
+	  	open,
+	  	symbol_index_low
 	 );
+	 symbol_index <= symbol_index_low + 1;
 count_symbol <= symbol_index;
 
 
 	delete_me: count_to port map(
-	  	not_clk,RESET_manual, 
+		symbol_clock,RESET_manual, 
 	  	15000000 - 1,
-	  	not_used_clk1,
-	  	symbol_index_real
+	  	open,
+	  	symbol_index_r
 	 );
+	 symbol_index_real<= symbol_index_r + 1;
 
-
-corrected_real_data_out <= 7123456 when symbol_index = 0 else real_corrected_conn;
-corrected_imag_data_out <= 7123456 when symbol_index = 0 else imag_corrected_conn;
+corrected_real_data_out <= 7123456 when symbol_index = 0 else real_estim_conn;
+corrected_imag_data_out <= 7123456 when symbol_index = 0 else imag_estim_conn;
 END ARCHITECTURE;

@@ -6,66 +6,6 @@ ENTITY multiplication_num_selector IS
 		CLK: in std_logic;
 		H_S_CLK: in std_logic;
 		RESET: in std_logic;
-		pilot_real_1: in integer;
-		pilot_imag_1: in integer;
-		pilot_real_2: in integer;
-		pilot_imag_2: in integer;
-		pilot_real_3: in integer;
-		pilot_imag_3: in integer;
-		pilot_real_4: in integer;
-		pilot_imag_4: in integer;
-		pilot_real_5: in integer;
-		pilot_imag_5: in integer;
-		pilot_real_6: in integer;
-		pilot_imag_6: in integer;
-		pilot_real_7: in integer;
-		pilot_imag_7: in integer;
-		pilot_real_8: in integer;
-		pilot_imag_8: in integer;
-		pilot_real_9: in integer;
-		pilot_imag_9: in integer;
-		pilot_real_10: in integer;
-		pilot_imag_10: in integer;
-		pilot_real_11: in integer;
-		pilot_imag_11: in integer;
-		pilot_real_12: in integer;
-		pilot_imag_12: in integer;
-		pilot_real_13: in integer;
-		pilot_imag_13: in integer;
-		pilot_real_14: in integer;
-		pilot_imag_14: in integer;
-		pilot_real_15: in integer;
-		pilot_imag_15: in integer;
-		pilot_real_16: in integer;
-		pilot_imag_16: in integer;
-		pilot_real_17: in integer;
-		pilot_imag_17: in integer;
-		pilot_real_18: in integer;
-		pilot_imag_18: in integer;
-		pilot_real_19: in integer;
-		pilot_imag_19: in integer;
-		pilot_real_20: in integer;
-		pilot_imag_20: in integer;
-		pilot_real_21: in integer;
-		pilot_imag_21: in integer;
-		pilot_real_22: in integer;
-		pilot_imag_22: in integer;
-		pilot_real_23: in integer;
-		pilot_imag_23: in integer;
-		pilot_real_24: in integer;
-		pilot_imag_24: in integer;
-		pilot_real_25: in integer;
-		pilot_imag_25: in integer;
-		pilot_real_26: in integer;
-		pilot_imag_26: in integer;
-		pilot_real_27: in integer;
-		pilot_imag_27: in integer;
-		pilot_real_28: in integer;
-		pilot_imag_28: in integer;
-		pilot_real_29: in integer;
-		pilot_imag_29: in integer;
-		pilot_real_30: in integer;
-		pilot_imag_30: in integer;
 		sinc_m14 : in integer;
 		sinc_m13 : in integer;
 		sinc_m12 : in integer;
@@ -96,8 +36,6 @@ ENTITY multiplication_num_selector IS
 		sinc_13 : in integer;
 		sinc_14 : in integer;
 		sinc_15 : in integer;
-        selected_real_out: out integer;
-        selected_imag_out: out integer;
         selected_sinc_out: out integer
 		);
 END multiplication_num_selector;
@@ -160,78 +98,6 @@ begin
             load_new_data
             );
 
-    real_pilots: PISO_shift_register PORT MAP(
-            h_s_not_clk,
-            RESET,
-            load_new_data,
-            pilot_real_1,
-            pilot_real_2,
-            pilot_real_3,
-            pilot_real_4,
-            pilot_real_5,
-            pilot_real_6,
-            pilot_real_7,
-            pilot_real_8,
-            pilot_real_9,
-            pilot_real_10,
-            pilot_real_11,
-            pilot_real_12,
-            pilot_real_13,
-            pilot_real_14,
-            pilot_real_15,
-            pilot_real_16,
-            pilot_real_17,
-            pilot_real_18,
-            pilot_real_19,
-            pilot_real_20,
-            pilot_real_21,
-            pilot_real_22,
-            pilot_real_23,
-            pilot_real_24,
-            pilot_real_25,
-            pilot_real_26,
-            pilot_real_27,
-            pilot_real_28,
-            pilot_real_29,
-            pilot_real_30,
-            selected_real_out
-            );
-    imag_pilots: PISO_shift_register PORT MAP(
-            h_s_not_clk,
-            RESET,
-            load_new_data,
-            pilot_imag_1,
-            pilot_imag_2,
-            pilot_imag_3,
-            pilot_imag_4,
-            pilot_imag_5,
-            pilot_imag_6,
-            pilot_imag_7,
-            pilot_imag_8,
-            pilot_imag_9,
-            pilot_imag_10,
-            pilot_imag_11,
-            pilot_imag_12,
-            pilot_imag_13,
-            pilot_imag_14,
-            pilot_imag_15,
-            pilot_imag_16,
-            pilot_imag_17,
-            pilot_imag_18,
-            pilot_imag_19,
-            pilot_imag_20,
-            pilot_imag_21,
-            pilot_imag_22,
-            pilot_imag_23,
-            pilot_imag_24,
-            pilot_imag_25,
-            pilot_imag_26,
-            pilot_imag_27,
-            pilot_imag_28,
-            pilot_imag_29,
-            pilot_imag_30,
-            selected_imag_out
-            );
     sinc_coeffs: PISO_shift_register PORT MAP(
             h_s_not_clk,
             RESET,

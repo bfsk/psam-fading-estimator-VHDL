@@ -99,7 +99,7 @@ begin
 				shift_outputs_real(i - 1),
 				shift_outputs_imag(i - 1),
 				RESET,
-				pilot_CLK,
+				CLK,
 				shift_outputs_real(i),
 				shift_outputs_imag(i)
 				);		
@@ -109,7 +109,7 @@ begin
 				real_in,
 				imag_in,
 				RESET,
-				pilot_CLK,
+				CLK,
 				shift_outputs_real(i),
 				shift_outputs_imag(i)
 				);	

@@ -82,14 +82,14 @@ begin
 
 	h_s_not_clk <= not(CLK);
 	matlb_symbol_clock_generation_test: clock_divider port map(
-		21 - 1,
+		20 - 1,
 		CLK, RESET,
 		matlab_symbol_clock
 	   );
 
 	matlab_symbol_clock_inverted <= not(matlab_symbol_clock);
 	generating_matlab_symbols: count_to port map(
-		matlab_symbol_clock_inverted,RESET, 
+		matlab_symbol_clock,RESET, 
 		1500000 - 1,
 		open,
 		matlab_symbol

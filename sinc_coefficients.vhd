@@ -4,7 +4,7 @@ use IEEE.NUMERIC_STD.all;
 
 ENTITY sinc_coefficients IS
 	PORT(
-		index_of_symbol: IN integer;		  
+		index_of_symbol: IN std_logic_vector(3 downto 0);		  
 		sinc_m14 : OUT integer;
 	  	sinc_m13 : OUT integer;
 	  	sinc_m12 : OUT integer;
@@ -44,7 +44,7 @@ begin
 process(index_of_symbol) is
 begin
 	case index_of_symbol is
-                when 1=>
+                when "0010"=>
         sinc_m14 <= 4704;
         sinc_m13 <= -5064;
         sinc_m12 <= 5484;
@@ -76,7 +76,7 @@ begin
         sinc_14 <= -4749;
         sinc_15 <= 4431;
 
-when 2=>
+when "0011"=>
         sinc_m14 <= 9160;
         sinc_m13 <= -9857;
         sinc_m12 <= 10670;
@@ -108,7 +108,7 @@ when 2=>
         sinc_14 <= -9336;
         sinc_15 <= 8708;
 
-when 3=>
+when "0100"=>
         sinc_m14 <= 13175;
         sinc_m13 <= -14174;
         sinc_m12 <= 15335;
@@ -140,7 +140,7 @@ when 3=>
         sinc_14 <= -13557;
         sinc_15 <= 12641;
 
-when 4=>
+when "0101"=>
         sinc_m14 <= 16580;
         sinc_m13 <= -17830;
         sinc_m12 <= 19283;
@@ -172,7 +172,7 @@ when 4=>
         sinc_14 <= -17224;
         sinc_15 <= 16055;
 
-when 5=>
+when "0110"=>
         sinc_m14 <= 19232;
         sinc_m13 <= -20674;
         sinc_m12 <= 22351;
@@ -204,7 +204,7 @@ when 5=>
         sinc_14 <= -20170;
         sinc_15 <= 18795;
 
-when 6=>
+when "0111"=>
         sinc_m14 <= 21022;
         sinc_m13 <= -22591;
         sinc_m12 <= 24413;
@@ -236,7 +236,7 @@ when 6=>
         sinc_14 <= -22259;
         sinc_15 <= 20734;
 
-when 7=>
+when "1000"=>
         sinc_m14 <= 21882;
         sinc_m13 <= -23507;
         sinc_m12 <= 25393;
@@ -268,7 +268,7 @@ when 7=>
         sinc_14 <= -23391;
         sinc_15 <= 21782;
 
-when 8=>
+when "1001"=>
         sinc_m14 <= 21782;
         sinc_m13 <= -23391;
         sinc_m12 <= 25257;
@@ -300,7 +300,7 @@ when 8=>
         sinc_14 <= -23507;
         sinc_15 <= 21882;
 
-when 9=>
+when "1010"=>
         sinc_m14 <= 20734;
         sinc_m13 <= -22259;
         sinc_m12 <= 24026;
@@ -332,7 +332,7 @@ when 9=>
         sinc_14 <= -22591;
         sinc_15 <= 21022;
 
-when 10=>
+when "1011"=>
         sinc_m14 <= 18795;
         sinc_m13 <= -20170;
         sinc_m12 <= 21762;
@@ -364,7 +364,7 @@ when 10=>
         sinc_14 <= -20674;
         sinc_15 <= 19232;
 
-when 11=>
+when "1100"=>
         sinc_m14 <= 16055;
         sinc_m13 <= -17224;
         sinc_m12 <= 18577;
@@ -396,7 +396,7 @@ when 11=>
         sinc_14 <= -17830;
         sinc_15 <= 16580;
 
-when 12=>
+when "1101"=>
         sinc_m14 <= 12641;
         sinc_m13 <= -13557;
         sinc_m12 <= 14617;
@@ -428,7 +428,7 @@ when 12=>
         sinc_14 <= -14174;
         sinc_15 <= 13175;
 
-when 13=>
+when "1110"=>
         sinc_m14 <= 8708;
         sinc_m13 <= -9336;
         sinc_m12 <= 10062;
@@ -460,7 +460,7 @@ when 13=>
         sinc_14 <= -9857;
         sinc_15 <= 9160;
 
-when 14=>
+when "1111"=>
         sinc_m14 <= 4431;
         sinc_m13 <= -4749;
         sinc_m12 <= 5117;
